@@ -16,5 +16,7 @@ public class SubstringDemo {
         //重载的substring传入一个参数：从指定位置截取到字符串末尾
         sub = host.substring(4);
         System.out.println(sub);
+
+
     }
 }

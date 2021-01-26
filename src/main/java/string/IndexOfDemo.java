@@ -21,5 +21,8 @@ public class IndexOfDemo {
         index = str.lastIndexOf("in");
         System.out.println(index);//9
 
+
+
+
     }
 }

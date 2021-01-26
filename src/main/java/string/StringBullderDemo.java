@@ -16,6 +16,7 @@ public class StringBullderDemo {
         //StringBullder builder = new StringBullder();
 
         //基于给定的字符串内容进行修改
+        //StringBuffer builder = new StringBuffer(str)
         StringBuilder builder = new StringBuilder(str);
         /*
         * 好好学习java
@@ -30,6 +31,23 @@ public class StringBullderDemo {
         builder.replace(13,18,"改变世界");
         System.out.println(builder.toString());
 //        直接输出builder也是输出toSring返回的字符串
+        System.out.println(builder);
+        /*
+        * 好好学习java,就是为了改变世界
+        * ,就是为了改变世界
+        * delete:删除当前字符串中的部分内容*/
+        builder.delete(0,8);
+        System.out.println(builder);
+        System.out.println(builder.toString());
+
+        /*
+        * ,就是为了改变世界!
+        * 活着,就是为了改变世界
+        * insert:将给定内容插入到指定位置*/
+        builder.insert(0,"活着");
+        System.out.println(builder);
+
+        builder.reverse();
         System.out.println(builder);
     }
 

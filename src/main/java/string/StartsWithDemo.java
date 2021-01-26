@@ -16,5 +16,6 @@ public class StartsWithDemo {
         boolean ends = str.endsWith("cn");
         System.out.println("ends:"+ends);
 
+
     }
 }

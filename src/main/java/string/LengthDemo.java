@@ -10,5 +10,7 @@ public class LengthDemo {
         String str = "123abc";
         int len = str.length();
         System.out.println("len="+len);
+
+
     }
 }

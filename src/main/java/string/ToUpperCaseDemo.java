@@ -18,5 +18,7 @@ public class ToUpperCaseDemo {
 
         String lower = str.toLowerCase();
         System.out.println(lower);
+
+
     }
 }
