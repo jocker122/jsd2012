@@ -16,22 +16,18 @@ import java.util.Scanner;
 public class Note {
     public static void main(String[] args) throws IOException {
         Scanner scan = new Scanner(System.in);
-        System.out.println("输入文件名:");
-        String filname = scan.nextLine();
-        RandomAccessFile raf = new RandomAccessFile(filname+".txt","rw");
-        System.out.println("请开始输入内容，单独输入exit退出。");
+        String filename = scan.nextLine();
+        RandomAccessFile raf = new RandomAccessFile(filename+".txt","rw");
         while(true){
-          String line = scan.nextLine();
-          if("exit".equals(line)){
+            String line = scan.nextLine();
+            if("exit".equals(line)){
                 break;
-          }
-          byte[] data = line.getBytes("UTF-8");
-          raf.write(data);
+            }
+            byte[] data= line.getBytes("utf-8");
+            raf.write(data);
         }
+        System.out.println("完成");
         raf.close();
-        System.out.println("完事");
-
-
 
 
 
