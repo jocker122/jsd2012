@@ -33,7 +33,7 @@ public class Server {
                  启动当前程序.
              */
             System.out.println("正在启动客户端...");
-            serverSocket = new ServerSocket(8088);
+            serverSocket = new ServerSocket(8089);
             System.out.println("启动服务端完毕!");
         } catch (IOException e) {
             e.printStackTrace();
@@ -50,20 +50,15 @@ public class Server {
                  方法会立即返回一个Socket实例,通过这个Socket就可以与
                  连接的客户端进行交互了.
              */
-            System.out.println("等待客户端连接...");
-            Socket socket = serverSocket.accept();
-            System.out.println("一个客户端连接了!");
-            /*
-                Socket提供方法:
-                InputStream getInputStream()
-                通过socket获取的输入流可以读取远端计算机发过来的数据
-             */
-            InputStream in = socket.getInputStream();
-            InputStreamReader isr = new InputStreamReader(
-                    in,"utf-8");
-            BufferedReader br = new BufferedReader(isr);
-            String line = br.readLine();
-            System.out.println("客户端说"+line);
+            while(true) {
+                System.out.println("等待客户端连接...");
+                Socket socket = serverSocket.accept();
+                System.out.println("一个客户端连接了!");
+                //启动一个线程处理与该客户端的交互
+                Runnable handler = new ClientHandler(socket);
+                  Thread t = new Thread(handler);
+                  t.start();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -73,5 +68,32 @@ public class Server {
     public static void main(String[] args) {
         Server server = new Server();
         server.start();
+    }
+    private class ClientHandler implements Runnable{
+        private Socket socket;
+        public ClientHandler(Socket socket){
+            this.socket = socket;
+        }
+
+        public void run(){
+            try{
+
+            /*
+                Socket提供方法:
+                InputStream getInputStream()
+                通过socket获取的输入流可以读取远端计算机发过来的数据
+             */
+                InputStream in = socket.getInputStream();
+                InputStreamReader isr = new InputStreamReader(
+                        in, "utf-8");
+                BufferedReader br = new BufferedReader(isr);
+                String line;
+                while ((line = br.readLine()) != null) {
+                    System.out.println(line);
+                }
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+        }
     }
 }

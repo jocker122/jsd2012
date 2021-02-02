@@ -2,6 +2,7 @@ package socket;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Scanner;
 
 /**
  * 聊天室客户端
@@ -29,12 +30,13 @@ public class Client {
             System.out.println("正在连接服务端...");
             //localhost表示本机IP
             //实例化的过程就是连接的过程,若连接服务端失败会抛出异常
-            socket = new Socket("172.201.10.49", 8088);
+            socket = new Socket("localhost", 8089);//localhost
             System.out.println("与服务端建立连接!!");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
     /**
      * 客户端开始工作的方法
      */
@@ -56,14 +58,33 @@ public class Client {
                                 new OutputStreamWriter(
                                         socket.getOutputStream(), "utf-8"
                                 )
-                        ),true
+                        ), true
                 );
         ) {
-            pw.println("wdnmd");
+            Scanner scan = new Scanner(System.in);
+            System.out.println("请输入内容,单独输入exit退出");
+            while (true) {
+                String line = scan.nextLine();
+                if ("exit".equals(line)) {
+                    break;
+                }
+                pw.println(line);
+            }
+
         } catch (IOException ioException) {
             ioException.printStackTrace();
+        } finally {
+
+                //最终不再通讯时要关闭socket.(相当于挂电话)
+                //socket关闭后,通过socket获取的输入流与输出流就自动关闭了
+                try {
+                    socket.close();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            }
         }
-    }
+
     public static void main(String[] args) {
         Client clint = new Client();
         clint.start();
