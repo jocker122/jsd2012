@@ -30,7 +30,7 @@ public class Client {
             System.out.println("正在连接服务端...");
             //localhost表示本机IP
             //实例化的过程就是连接的过程,若连接服务端失败会抛出异常
-            socket = new Socket("localhost", 8089);//localhost
+            socket = new Socket("172.201.10.47", 8089);//localhost  172.201.10.49
             System.out.println("与服务端建立连接!!");
         } catch (IOException e) {
             e.printStackTrace();
@@ -41,6 +41,11 @@ public class Client {
      * 客户端开始工作的方法
      */
     public void start() {
+        //先启动读取服务端发送过来消息的线程
+        ServerHandler handler = new ServerHandler();
+        Thread t = new Thread(handler);
+        t.setDaemon(true);
+        t.start();
         try (/*
                 Socket提供的方法
                 OutputStream getOutputStream()
@@ -60,6 +65,7 @@ public class Client {
                                 )
                         ), true
                 );
+
         ) {
             Scanner scan = new Scanner(System.in);
             System.out.println("请输入内容,单独输入exit退出");
@@ -69,6 +75,9 @@ public class Client {
                     break;
                 }
                 pw.println(line);
+                //读取服务发送过来的一句话
+                //line = br.readLine();
+               // System.out.println(line);
             }
 
         } catch (IOException ioException) {
@@ -88,5 +97,25 @@ public class Client {
     public static void main(String[] args) {
         Client clint = new Client();
         clint.start();
+    }
+    //该线程负责读取服务端发送过来的消息
+    private class ServerHandler implements Runnable{
+        @Override
+        public void run() {
+           try( BufferedReader br = new BufferedReader(
+                   new InputStreamReader(
+                           socket.getInputStream(),"utf-8"
+                   )
+           );
+           ){
+               String line;
+               //读取服务端发送过来的每一行字符串并输出到客户端的控制台上
+               while((line = br.readLine())!=null){
+                   System.out.println(line);
+               }
+           }catch(IOException e){
+            //   e.printStackTrace();
+           }
+        }
     }
 }

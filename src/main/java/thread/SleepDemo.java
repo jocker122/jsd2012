@@ -28,6 +28,7 @@ public class SleepDemo {
                 }
             }
              System.out.println("时间到");
+             System.out.println("程序结束了");
 
     }
 }
