@@ -3,9 +3,7 @@ package socket;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * 聊天室服务端
@@ -24,7 +22,9 @@ public class Server {
     private ServerSocket serverSocket;
     //用来保存所有客户端输出流的数组，用于让ClientHandler之间共享输出流广播消息使用
 //    private PrintWriter[] allOut = {};
-    private Collection<PrintWriter> allOut = new ArrayList<>();
+   // private Collection<PrintWriter> allOut = new ArrayList<>();
+   //基于ArrayList创建一个并发安全的集合存放所有输出流
+   private List<PrintWriter> allOut = Collections.synchronizedList(new ArrayList<>());
     public Server(){
         try {
             /*
@@ -85,7 +85,7 @@ public class Server {
             try{
                 /*
                     Socket提供的方法:
-                    InputStream getInputStream()
+                     InputStream getInputStream()
                     通过socket获取的输入流可以读取远端计算机发送过来的数据
                  */
                 InputStream in = socket.getInputStream();
@@ -107,33 +107,37 @@ public class Server {
 //                synchronized (allOut){
 
 //                synchronized (serverSocket) {//可以
-                synchronized (Server.class) {//可以
+//                synchronized (Server.class) {//可以
                     //1先对allOut数组扩容
 //                    allOut = Arrays.copyOf(allOut, allOut.length + 1);
                     //2将当前pw存入数组最后一个位置
 //                    allOut[allOut.length - 1] = pw;
 
-                    allOut.add(pw);
-                }
+   //                 allOut.add(pw);
+ //               }
+                allOut.add(pw);//如果当前集合是并发安全的集合,则不需要同步块控制了
 //                System.out.println(host + "上线了!当前在线人数:"+allOut.length);
                 System.out.println(host + "上线了!当前在线人数:"+allOut.size());
 
                 String line;
                 while ((line = br.readLine()) != null) {
+                    String message = line;
                     System.out.println(host + "说:" + line);
-                    synchronized (Server.class) {
+ //                   synchronized (Server.class) {
                         //将消息发送给所有客户端
-                        for (PrintWriter o : allOut) {
-                            o.println(host + "说:" + line);
-                        }
-                    }
+//                        for (PrintWriter o : allOut) {
+//                            o.println(host + "说:" + line);
+//                        }
+//                    }
+                      //当前使用并发安全的集合时,遍历要采取foreach方法
+                    allOut.forEach(o->o.println(host + "说:" + message));
                 }
             }catch(IOException e){
                 e.printStackTrace();
             }finally {
                 //处理该客户端断开连接后的操作
                 //将对应当前客户端的输出流从共享数组allOut中删除
-                synchronized (Server.class) {
+  //              synchronized (Server.class) {
 //                    for (int i = 0; i < allOut.length; i++) {
 //                        if (pw == allOut[i]) {
 //                            allOut[i] = allOut[allOut.length - 1];
@@ -141,8 +145,9 @@ public class Server {
 //                            break;
 //                        }
 //                    }
-                    allOut.remove(pw);
-                }
+ //                   allOut.remove(pw);
+ //               }
+                allOut.remove(pw);
 //                System.out.println(host + "下线了!当前在线人数:"+allOut.length);
                 System.out.println(host + "下线了!当前在线人数:"+allOut.size());
                 try {
